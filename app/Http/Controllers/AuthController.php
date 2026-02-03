@@ -76,24 +76,31 @@ class AuthController extends Controller
     }
 
     public function getUser(Request $request)
-    {
-        $user = $request->user();
+{
+    $user = $request->user();
 
-
-        $token = $request->bearerToken();
-
+    // Jika user tidak ditemukan (token tidak valid/tidak ada)
+    if (!$user) {
         return response()->json([
-            'success' => true,
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'username' => $user->username,
-                'email' => $user->email,
-                'role' => $user->role,
-                'created_at' => $user->created_at,
-                'updated_at' => $user->updated_at,
-            ],
-            'token' => $token
-        ]);
+            'success' => false,
+            'message' => 'User not authenticated'
+        ], 401);
     }
+
+    $token = $request->bearerToken();
+
+    return response()->json([
+        'success' => true,
+        'data' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'username' => $user->username,
+            'email' => $user->email,
+            'role' => $user->role,
+            // Tambahkan format jika perlu
+            'created_at' => $user->created_at,
+        ],
+        'token' => $token
+    ]);
+}
 }
